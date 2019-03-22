@@ -175,12 +175,8 @@ public class ATM{
         _keypad = new Keypad("Keypad");
         //empty password 
         _password = "";
-        String userPassword = "";
-        //strip the input to only the number
-        String target = "button";
-        String replacement = "";
         //when a character is entered a 'X' is shown on screen
-        String text = "   X";
+        String text = "";
         //counter in the while loop
         int c = 0;
 
@@ -217,9 +213,9 @@ public class ATM{
             }
             else{
                 //reset input values
-                _input = null;
-                cInput = null;
-                kInput = null;
+                _input = "";
+                cInput = "";
+                kInput = "";
             }
 
             //if there is input
@@ -228,16 +224,8 @@ public class ATM{
                 //if the first character is entered
                 if(_input.length() == 1){
                     _password += _input;
-                    if (_password.length() == 1) {
-                        //sets the label text to a 'X'
-                        setLabelText(text);
-                        _password = _password.trim(); 
-                    }
-                    else{
-                        //adds a 'X'
-                        text += "X";
-                        setLabelText(text);
-                    }
+                    text += "X";
+                    setLabelText(text);
                 }
 
                 //if the user is done entering his password
@@ -247,13 +235,13 @@ public class ATM{
                         setButton('K',false);
                         return true;
                     }
-                    else{//if not goes back to the main program
-                        _password = null;
-
+                    else{//if not try again
+                        _password = "";
+                        text = "";
                         setLabelText("Incorrect password");
-                        setButton('K', false);
                         delay(1500);
-                        return false;
+                        setLabelText("Please try again");
+
                     }
                 }
             }   
