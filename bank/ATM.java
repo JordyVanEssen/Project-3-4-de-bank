@@ -1,6 +1,4 @@
 import java.awt.*;
-import java.sql.Time;
-import java.util.ArrayList;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -86,7 +84,7 @@ public class ATM{
     }
 
     //creates the buttons 'Yes' & 'No'
-    public void choiceBtn(int pX, int pY){
+    public void choiceBtn(String pAnswer1, String pAnswer2,int pX, int pY){
         String btnName = "";
         //to create 2 buttons
         for (int i = 0; i < 2; i++) {
@@ -95,10 +93,10 @@ public class ATM{
     
             switch (i) {
                 case 0:
-                    btnName = "Yes";
+                    btnName = pAnswer1;
                     break;
                 case 1:
-                    btnName = "No";
+                    btnName = pAnswer2;
                     break;
                 default:
                     break;
@@ -111,22 +109,27 @@ public class ATM{
         }
     }
 
-    //checks for the yes & no button input
-    private boolean choice(int pX, int pY){
+    //checks for the yes & no button input, pMode == 'T' or 'C', transaction or choice
+    private boolean choice(char pMode, int pX, int pY){
         int c = 0;
-        choiceBtn(pX, pY);
+        if(pMode == 'T'){
+            choiceBtn("Withdraw","Deposit",pX, pY);
+        }
+        else{
+            choiceBtn("Yes","No",pX, pY);
+        }
         //checks if a button is pressed
         while (true) {
             _input = _btnReceipt[c].getInput();
 
             //if they are pressed
             if(_input != null){
-                if(_input.equals("Yes")){//display the receipt
+                if(_input.equals("Yes") || _input == "Withdraw"){//display the receipt
                     setButton(' ', false);                        
                     return true;
                 }
                 else{//break of the function showing nog receipt
-                    if(_input.equals("No")){
+                    if(_input.equals("No")  || _input == "Deposit"){
                         setButton(' ', false);
                         return false;
                     }
@@ -151,7 +154,7 @@ public class ATM{
         setLabelText("Want a receipt?");
 
         //if Yes is pressed   
-        if(choice(pX, pY)){
+        if(choice('C', pX, pY)){
             if(_mode.equals("Withdrawel")){
                 setLabelText("Now dispensing \u20AC " + _amount);
             }
@@ -171,21 +174,25 @@ public class ATM{
 
     //checks if the user enters a valid password
     public boolean authenticate(int pX, int pY, Client pCurrentClient){
+        Point pos = new Point(160, 70);
+        DisplayText showX = new DisplayText("showX", pos);
+        showX.setContainer(_as);
+        showX.giveOutput("");
+
         //creates a keypad
         _keypad = new Keypad("Keypad");
         //empty password 
         _password = "";
         //when a character is entered a 'X' is shown on screen
         String text = "";
-        //counter in the while loop
-        int c = 0;
-
         //keypad input
         String kInput = "";
         //console keypad input
         String cInput = "";
+        //counter in the while loop
+        int c = 0;
 
-        setLabelText("Enter your password");
+        setLabelText("Enter your password " + pCurrentClient.getName());
         //if the buttons are not yet created
         if(_createBtn){
             createButton(20, 70);
@@ -220,12 +227,11 @@ public class ATM{
 
             //if there is input
             if (_input != null) {
-                //strip it to the number
                 //if the first character is entered
                 if(_input.length() == 1){
                     _password += _input;
                     text += "X";
-                    setLabelText(text);
+                    showX.giveOutput(text);
                 }
 
                 //if the user is done entering his password
@@ -233,15 +239,17 @@ public class ATM{
                     //checks if the password is correct
                     if(pCurrentClient.getPin().equals(_password)){
                         setButton('K',false);
+                        delay(200);
+                        showX.getLabel().setVisible(false);
                         return true;
                     }
                     else{//if not try again
                         _password = "";
                         text = "";
+                        showX.giveOutput(" ");
                         setLabelText("Incorrect password");
-                        delay(1500);
+                        delay(1250);
                         setLabelText("Please try again");
-
                     }
                 }
             }   
@@ -264,8 +272,8 @@ public class ATM{
         //counter
         int c = 0;
 
-        setLabelText("Want to withdraw?");
-        if(choice(pX, pY)){
+        setLabelText("Choose:");
+        if(choice('T', pX, pY)){
             withdraw = true;
         }
         else{

@@ -30,7 +30,7 @@ public class Program{
                     _loggedIn = _atm.authenticate(50, 20, _currentClient);
                     //if the password is correct
                     if(_loggedIn){
-                        _atm.transaction(_currentClient, 50, 20);
+                        _atm.doTransaction(_currentClient);
                     }
                 }
                 else{
@@ -39,7 +39,8 @@ public class Program{
                 }
                 _cardnumber = "";
             } catch (Exception e) {
-
+                System.out.println("Oops, something went wrong...");
+                return;
             }
         }
         
